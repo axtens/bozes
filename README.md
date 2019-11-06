@@ -121,4 +121,6 @@ The languages are controlled by a bozes.json file which is stored beside the exe
 
 `$F` evaluates to the Windows path to the temporary file containing the language code. `$f` evaluates to the Linux/MacOS path to it. 
 
+![Alt Text](https://thepracticaldev.s3.amazonaws.com/i/pm0ep432j9t4xawtjrsa.png)
+
 MIT licensed.
