@@ -97,11 +97,11 @@ namespace bozes
         {
             var tempFile = Path.ChangeExtension(Path.GetTempFileName(), value["Extension"]);
             File.WriteAllText(tempFile, code);
-            
+
             var proc = new Process();
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
             proc.StartInfo.FileName = value["Binary"];
-            proc.StartInfo.Arguments = value["Tail"].Replace("$F", tempFile).Replace("$f", tempFile.Replace("\\","/"));
+            proc.StartInfo.Arguments = value["Tail"].Replace("$F", tempFile).Replace("$f", tempFile.Replace("\\", "/"));
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.RedirectStandardOutput = true;
             proc.Start();
@@ -128,21 +128,31 @@ namespace bozes
                 if (arg.StartsWith("--"))
                 {
                     results.DoubleDashed.Add(arg);
-                } 
+                }
                 else
                 {
                     if (arg.StartsWith("-"))
                     {
 
-                        if (!results.Dashed.ContainsKey(arg)) {
-                          results.Dashed[arg] = new List<string>();
+                        if (!results.Dashed.ContainsKey(arg))
+                        {
+                            results.Dashed[arg] = new List<string>();
                         }
                         cursor++;
                         if (cursor > argsmax)
                         {
                             break;
                         }
-                        results.Dashed[arg].Add(args[cursor]);
+                        if (args[cursor].StartsWith("-"))
+                        {
+                            cursor--;
+                            results.Dashed[arg].Add("");
+                        }
+                        else
+                        {
+                            results.Dashed[arg].Add(args[cursor]);
+                        }
+
                     }
                     else
                     {
