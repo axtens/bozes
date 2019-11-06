@@ -8,6 +8,6 @@ namespace bozes
     {
         public List<string> Arguments { get; set; }
         public List<string> DoubleDashed { get; set; }
-        public Dictionary<string,string> Dashed { get; set; }
+        public Dictionary<string, List<string>> Dashed { get; set; }
     }
 }

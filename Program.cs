@@ -26,11 +26,7 @@ namespace bozes
                 Debugger.Launch();
             }
 
-            var selection = CLI.Arguments[0];
-            if (selection.Length == 0)
-            {
-                return;
-            }
+            var selection = CLI.Dashed["-t"][0];
 
             /*
             %f page source tempfile
@@ -119,34 +115,40 @@ namespace bozes
             {
                 Arguments = new List<string>(),
                 DoubleDashed = new List<string>(),
-                Dashed = new Dictionary<string, string>()
+                Dashed = new Dictionary<string, List<string>>()
             };
 
-            foreach (string arg in args)
+            var cursor = 0;
+            var argsmax = args.Length - 1;
+            while (cursor <= argsmax)
             {
+                var arg = args[cursor];
+
                 if (arg.StartsWith("--"))
                 {
                     results.DoubleDashed.Add(arg);
-                }
+                } 
                 else
                 {
                     if (arg.StartsWith("-"))
                     {
-                        var pos = arg.IndexOfAny(new char[] { '=', ':' });
-                        if (pos > -1)
-                        {
-                            results.Dashed[arg.Substring(0, pos)] = arg.Substring(pos + 1);
+
+                        if (!results.Dashed.ContainsKey(arg)) {
+                          results.Dashed[arg] = new List<string>();
                         }
-                        else
+                        cursor++;
+                        if (cursor > argsmax)
                         {
-                            results.Dashed[arg] = string.Empty;
+                            break;
                         }
+                        results.Dashed[arg].Add(args[cursor]);
                     }
                     else
                     {
                         results.Arguments.Add(arg);
                     }
                 }
+                cursor++;
             }
             return results;
         }
