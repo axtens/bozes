@@ -1,0 +1,37 @@
+{
+    "8th": {
+        "Extension": "8th",
+        "Binary": "c:\\8th\\bin\\win64\\8th.exe",
+        "Tail": "$F"
+    },
+    "euphoria": {
+        "Extension": "ex",
+        "Binary": "C:\\Euphoria\\bin\\eui.EXE",
+        "Tail": "$F"
+    },
+    "cmd": {
+        "Extension": "cmd",
+        "Binary": "c:\\windows\\system32\\cmd.EXE",
+        "Tail": "/C $F"
+    },
+    "php": {
+        "Extension": "php",
+        "Binary": "C:\\Program Files\\iis express\\PHP\\v7.3\\php.EXE",
+        "Tail": "-f $F"
+    },
+    "perl": {
+        "Extension": "pl",
+        "Binary": "C:\\Users\\bugma\\scoop\\apps\\perl\\current\\perl\\bin\\perl.EXE",
+        "Tail": "$F"
+    },
+    "python": {
+        "Extension": "py",
+        "Binary": "C:\\Users\\bugma\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+        "Tail": "$F"
+    },
+    "bash": {
+        "Extension": "sh",
+        "Binary": "C:\\Users\\bugma\\scoop\\shims\\bash.EXE",
+        "Tail": "-c $f"
+    }
+}
