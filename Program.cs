@@ -72,6 +72,7 @@ namespace bozes
                 }
                 var code = matches.Groups[1].Value.Trim();
                 result = ExecuteCode(code, lang.Value);
+                break;
             }
             Console.Out.Write(selection + "\nResult: " + result);
         }
