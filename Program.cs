@@ -1,23 +1,22 @@
 ﻿// receives selected text. evaluates found code between [lang][/lang]. returns code and "\nResult: " and result
 // modifies the zim file
 using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
-using System.Text.Json.Serialization;
+using System.IO;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace bozes
 {
-    static class Program
+    internal static class Program
     {
-        private static Dictionary<string, Dictionary<string, string>> Languages = new Dictionary<string, Dictionary<string, string>>();
+        private static readonly Dictionary<string, Dictionary<string, string>> Languages = new Dictionary<string, Dictionary<string, string>>();
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var CLI = ParseCommandLineToSettingsAndArgs(args);
-            if (CLI.Arguments.Count == 0 && CLI.DoubleDashed.Count == 0)
+            if (CLI.Arguments.Count == 0 && CLI.DoubleDashed.Count == 0 && CLI.Dashed.Count == 0)
             {
                 return;
             }
@@ -33,8 +32,6 @@ namespace bozes
                 return;
             }
 
-            var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-
             /*
             %f page source tempfile
             %d attachment directory
@@ -48,7 +45,7 @@ namespace bozes
             However, we'll always assume that %t is the only one we understand.
             */
 
-            var json = Path.ChangeExtension(location, ".json");
+            var json = Path.ChangeExtension(System.Reflection.Assembly.GetEntryAssembly().Location, ".json");
             if (!File.Exists(json))
             {
                 Console.Write(selection);
@@ -63,7 +60,7 @@ namespace bozes
             }
             catch
             {
-                Console.Write(selection);
+                Console.Out.Write(selection);
                 return;
             }
 
@@ -73,31 +70,29 @@ namespace bozes
             {
                 var rx = new Regex($@"\[{lang.Key}\](.*?)\[/{lang.Key}\]", RegexOptions.Singleline);
                 var matches = rx.Match(selection);
-                if (matches.Success)
+                if (!matches.Success)
                 {
-                    var code = matches.Groups[1].Value;
-                    result = ExecuteCode(code, lang.Value);
+                    continue;
                 }
+                var code = matches.Groups[1].Value.Trim();
+                result = ExecuteCode(code, lang.Value);
             }
             Console.Out.Write(selection + "\nResult: " + result);
         }
 
         private static void LoadLanguagesFromJson(string jsonText)
         {
-            var doc = System.Text.Json.JsonDocument.Parse(jsonText);
-            var root = doc.RootElement;
-            var langsEnu = root.EnumerateObject();
-            var name = string.Empty;
+            var doc = JsonDocument.Parse(jsonText);
+            var langsEnu = doc.RootElement.EnumerateObject();
             foreach (var langs in langsEnu)
             {
-                name = langs.Name;
                 var langEnu = langs.Value.EnumerateObject();
                 var langList = new Dictionary<string, string>();
                 foreach (var lang in langEnu)
                 {
                     langList.Add(lang.Name, lang.Value.GetString());
                 }
-                Languages.Add(name, langList);
+                Languages.Add(langs.Name, langList);
             }
         }
 
@@ -105,11 +100,11 @@ namespace bozes
         {
             var tempFile = Path.ChangeExtension(Path.GetTempFileName(), value["Extension"]);
             File.WriteAllText(tempFile, code);
+            
             var proc = new Process();
-
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
             proc.StartInfo.FileName = value["Binary"];
-            proc.StartInfo.Arguments = value["Tail"].Replace("$f", tempFile);
+            proc.StartInfo.Arguments = value["Tail"].Replace("$F", tempFile).Replace("$f", tempFile.Replace("\\","/"));
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.RedirectStandardOutput = true;
             proc.Start();
@@ -140,8 +135,11 @@ namespace bozes
                         var pos = arg.IndexOfAny(new char[] { '=', ':' });
                         if (pos > -1)
                         {
-                            results.Dashed[arg.Substring(0, pos)] = arg.Substring(pos+1);
-
+                            results.Dashed[arg.Substring(0, pos)] = arg.Substring(pos + 1);
+                        }
+                        else
+                        {
+                            results.Dashed[arg] = string.Empty;
                         }
                     }
                     else
@@ -153,5 +151,4 @@ namespace bozes
             return results;
         }
     }
-
 }
