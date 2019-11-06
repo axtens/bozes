@@ -17,12 +17,12 @@ namespace bozes
         static void Main(string[] args)
         {
             var CLI = ParseCommandLineToSettingsAndArgs(args);
-            if (CLI.Arguments.Count == 0 && CLI.Dashed.Count == 0)
+            if (CLI.Arguments.Count == 0 && CLI.DoubleDashed.Count == 0)
             {
                 return;
             }
 
-            if (CLI.Dashed.Contains("--debug"))
+            if (CLI.DoubleDashed.Contains("--debug"))
             {
                 Debugger.Launch();
             }
@@ -123,28 +123,35 @@ namespace bozes
             var results = new CommandLine
             {
                 Arguments = new List<string>(),
-                Dashed = new List<string>()
+                DoubleDashed = new List<string>(),
+                Dashed = new Dictionary<string, string>()
             };
 
             foreach (string arg in args)
             {
-                if (arg.StartsWith("-"))
+                if (arg.StartsWith("--"))
                 {
-                    results.Dashed.Add(arg);
+                    results.DoubleDashed.Add(arg);
                 }
                 else
                 {
-                    results.Arguments.Add(arg);
+                    if (arg.StartsWith("-"))
+                    {
+                        var pos = arg.IndexOfAny(new char[] { '=', ':' });
+                        if (pos > -1)
+                        {
+                            results.Dashed[arg.Substring(0, pos)] = arg.Substring(pos+1);
+
+                        }
+                    }
+                    else
+                    {
+                        results.Arguments.Add(arg);
+                    }
                 }
             }
             return results;
         }
-    }
-
-    internal class CommandLine
-    {
-        public List<string> Arguments { get; set; }
-        public List<string> Dashed { get; set; }
     }
 
 }
