@@ -4,7 +4,7 @@ This project attempts to be cross-platform and has been written in C# targeting 
 
 BOZES provides a mechanism for the evaluation of embedded programming language blocks in a Zim document. It has nothing to do with a [pinnacle of the same name in Israel](https://biblehub.com/topical/b/bozes.htm).
 
-Zim's online help have a section on [Custom Tools](https://zim-wiki.org/manual/Help/Custom_Tools.html) which gives a good introduction to how to extend Zim and describes the framework uses BOZES leverages.
+Zim's online help have a section on [Custom Tools](https://zim-wiki.org/manual/Help/Custom_Tools.html) which gives a good introduction to how to extend Zim and describes the framework BOZES leverages.
 
 The Zim document may contains, for example
 ```
